@@ -44,6 +44,12 @@ license-report --department.value=ninjaSquad
 license-report --registry=https://myregistry.com/
 ```
 
+#### private registry:
+```
+# if the name of the environment variable containing the bearer token for npm authorization is 'NPM_TOKEN'
+license-report --registry=https://myregistry.com/ --npmTokenEnvVar=NPM_TOKEN
+```
+
 #### different outputs:
 ```
 license-report --output=table

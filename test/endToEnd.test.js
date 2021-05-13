@@ -243,7 +243,19 @@ const EXPECTED_RAW_DATA = [
 		link: 'git+https://github.com/mochajs/mocha.git',
 		remoteVersion: '_VERSION_',
 		installedVersion: '_VERSION_'
-	}
+	},
+	{
+    author: "Pedro Teixeira pedro.teixeira@gmail.com",
+    department: "kessler",
+    relatedTo: "stuff",
+    name: "nock",
+    licensePeriod: "perpetual",
+    material: "material",
+    licenseType: "MIT",
+    link: "git+https://github.com/nock/nock.git",
+    remoteVersion: "13.0.5",
+    installedVersion: "13.0.5"
+  }
 ]
 
 /*
@@ -265,6 +277,7 @@ const EXPECTED_CSV_TEMPLATE = `department,related to,name,license period,materia
 {{department}},{{relatedTo}},[[visit-values]],{{licensePeriod}},{{material}},{{licenseType}},{{link}},{{remoteVersion}},{{installedVersion}},{{author}}
 {{department}},{{relatedTo}},[[@kessler/exponential-backoff]],{{licensePeriod}},{{material}},{{licenseType}},{{link}},{{remoteVersion}},{{installedVersion}},{{author}}
 {{department}},{{relatedTo}},[[mocha]],{{licensePeriod}},{{material}},{{licenseType}},{{link}},{{remoteVersion}},{{installedVersion}},{{author}}
+{{department}},{{relatedTo}},[[nock]],{{licensePeriod}},{{material}},{{licenseType}},{{link}},{{remoteVersion}},{{installedVersion}},{{author}}
 `;
 
 /*
@@ -287,4 +300,5 @@ const EXPECTED_TABLE_TEMPLATE = `{{department}}  {{relatedTo}}  {{name}}  {{lice
 {{department}}  {{relatedTo}}  [[visit-values]]  {{licensePeriod}}  {{material}}  {{licenseType}}  {{link}}  {{remoteVersion}}  {{installedVersion}}  {{author}}
 {{department}}  {{relatedTo}}  [[@kessler/exponential-backoff]]  {{licensePeriod}}  {{material}}  {{licenseType}}  {{link}}  {{remoteVersion}}  {{installedVersion}}  {{author}}
 {{department}}  {{relatedTo}}  [[mocha]]  {{licensePeriod}}  {{material}}  {{licenseType}}  {{link}}  {{remoteVersion}}  {{installedVersion}}  {{author}}
+{{department}}  {{relatedTo}}  [[nock]]  {{licensePeriod}}  {{material}}  {{licenseType}}  {{link}}  {{remoteVersion}}  {{installedVersion}}  {{author}}
 `;
