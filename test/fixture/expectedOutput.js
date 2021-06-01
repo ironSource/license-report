@@ -1,6 +1,4 @@
-const _ = require('lodash')
-const async = require('async')
-const request = require('request')
+const got = require('got')
 const semver = require('semver')
 const packageJson = require('../../package.json')
 const config = require('../../lib/config.js')
@@ -12,32 +10,39 @@ const config = require('../../lib/config.js')
 	latest version satisfying the defined range (the range character will be
 	removed later)
 */
-function addRemoteVersion(dependency, callback) {
+async function addRemoteVersion(dependency) {
 	dependency.remoteVersion = 'n/a'
 	let uri = config.registry + dependency.name
-	request(uri, function(err, response, body) {
-		if (!err && !((response.statusCode > 399) && (response.statusCode < 599))) {
-			try {
-				const json = JSON.parse(body)
-				// find the right version for this package
-				const versions = _.keys(json.versions)
-				const version = semver.maxSatisfying(versions, dependency.installedVersion)
-				if (version) {
-					dependency.remoteVersion = version.toString()
+	const options = {
+		retry: config.httpRetryOptions.maxAttempts,
+		hooks: {
+			beforeRetry: [
+				(options, error, retryCount) => {
+					debug(`http request to npm for package "${name}" failed, retrying again soon...`)
 				}
-			} catch (e) {
-				console.log(e)
-			}
+			],
+			beforeError: [
+				error => {
+					debug(error)
+					return error
+				}
+			]
 		}
+	}
+	const packagesJson = await got(uri, options).json()
 
-		return callback()
-	})
+	// find the right version for this package
+	const versions = Object.keys(packagesJson.versions)
+	const version = semver.maxSatisfying(versions, dependency.installedVersion)
+	if (version) {
+		dependency.remoteVersion = version.toString()
+	}
 }
 
 /*
 	add current values for installedVersion and remoteVersion to list of expectedData
 */
-module.exports.addVersionToExpectedData = (expectedData, done)  => {
+module.exports.addVersionToExpectedData = async (expectedData)  => {
 	// add version from package.json (dev-) dependencies as installedVersion
 	const packagesList = Object.assign(Object.assign({}, packageJson.dependencies), packageJson.devDependencies)
 	const packagesData = expectedData.map(packageData => {
@@ -45,16 +50,16 @@ module.exports.addVersionToExpectedData = (expectedData, done)  => {
 		return packageData
 	})
 
-	async.each(packagesData, addRemoteVersion, function() {
-		// remove range character from installedVersion
-		packagesData.forEach(packageData => {
-			if (packageData.installedVersion.match(/^[\^~].*/)) {
-				packageData.installedVersion = packageData.installedVersion.substring(1);
-			}
-		});
+	await Promise.all(packagesData.map(async (packageData) => {
+		await addRemoteVersion(packageData)
+	}))
 
-		done()
-	});
+	// remove range character from installedVersion
+	packagesData.forEach(packageData => {
+		if (packageData.installedVersion.match(/^[\^~].*/)) {
+			packageData.installedVersion = packageData.installedVersion.substring(1)
+		}
+	})
 }
 
 /*
