@@ -31,6 +31,8 @@ const packageJson = require(resolvedPackageJson)
 
 const deps = packageJson.dependencies
 const devDeps = packageJson.devDependencies
+const peerDeps = packageJson.peerDependencies
+const optDeps = packageJson.optionalDependencies
 
 const exclusions = Array.isArray(config.exclude) ? config.exclude : [config.exclude]
 /*
@@ -43,6 +45,14 @@ if (!config.only || config.only.indexOf('prod') > -1) {
 }
 
 if (!config.only || config.only.indexOf('dev') > -1) {
+	if (peerDeps) {
+		addPackagesToIndex(peerDeps, depsIndex, exclusions)
+	}
+	
+	if (optDeps) {
+		addPackagesToIndex(optDeps, depsIndex, exclusions)
+	}
+	
 	addPackagesToIndex(devDeps, depsIndex, exclusions)
 }
 
